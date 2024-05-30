@@ -221,3 +221,37 @@ std::pair<V, D> find_the_farthest_vertex(Graph<V, D> graph) {
 
     return farthest_vert;
 }
+
+
+int main() {
+    Graph<int> g;
+    for (size_t i = 1; i < 9; ++i) g.add_vertex(i);
+
+    g.add_edge(1, 2, 1.0);
+    g.add_edge(1, 3, 2.0);
+    g.add_edge(2, 6, 4.0);
+    g.add_edge(6, 1, 1.0);
+    g.add_edge(2, 5, 1.0);
+    g.add_edge(5, 6, 1.0);
+    g.add_edge(2, 4, 7.0);
+    g.add_edge(3, 7, 1.0);
+    g.add_edge(8, 4, 2.0);
+    g.add_edge(3, 8, 1.0);
+
+    g.remove_vertex(7);
+    g.remove_edge(8, 4);
+    g.remove_edge({ 4,3,6 });
+    g.walk(1, [](int vert) {std::cout << vert << " "; });
+
+    auto path = g.shortest_path(1, 6);
+    std::cout << std::endl << "Shortest path from 1 to 6:" << std::endl;
+    for (const auto& edge : path) {
+        std::cout << edge.from << " -> " << edge.to << " (Distance: " << edge.distance << ")" << std::endl;
+    }
+
+    auto max_vertex = find_the_farthest_vertex(g);
+    std::cout << std::endl << "Vertex with maximum average distance to neighbors and this distance: " << max_vertex.first << " (Distance: " << max_vertex.second << ")" << std::endl;
+    std::cout << std::endl << "degree of 1: " << g.degree(1);
+    std::cout << std::endl << "order of graph: " << g.order();
+    return 0;
+}
