@@ -27,14 +27,14 @@ public:
 
     void add_vertex(const V& v) {
         _vertices.insert(v); 
-        _edges.insert({ v, {} });
+        _edges.insert({ v, {} }); 
     }
 
     std::vector<Edge> get_incoming_edges(const V& vert) const {
         std::vector<Edge> incoming_vert; 
         for (const auto& v : _vertices) { 
-            for (const auto& edge : _edges.at(v)) {
-                if (edge.to == vert)
+            for (const auto& edge : _edges.at(v)) { 
+                if (edge.to == vert) 
                     incoming_vert.push_back(edge);
             }
         }
@@ -55,9 +55,9 @@ public:
     }
 
     std::vector<V> vertices() const {
-        std::vector<V> vertices; 
+        std::vector<V> vertices;
         for (const auto& vert : _vertices)
-            vertices.push_back(vert); 
+            vertices.push_back(vert);
         return vertices;
     }
 
@@ -67,39 +67,38 @@ public:
         if (!_vertices.contains(to))
             throw std::invalid_argument("to is not exist");
         if (distance < 0)
-            throw std::invalid_argument("only unsigned distance");
+            throw std::invalid_argument("only unsigned distance"); 
         _edges[from].push_back({ from, to, distance });
     }
 
     bool remove_edge(const V& from, const V& to) {
         if (!_edges.contains(from) || !_vertices.contains(to))
-            return false; 
+            return false;
         auto cnt_erased = 0;
         cnt_erased += std::erase_if(_edges[from],
             [to](const Edge& edge) {
                 return edge.to == to;
             });
-        if (cnt_erased) return true; 
+        if (cnt_erased) return true;
         return false;
     }
 
     bool remove_edge(const Edge& ed) {
         if (!_edges.contains(ed.from) || !_vertices.contains(ed.to))
-            return false; 
+            return false;
         auto cnt_erased = 0;
         cnt_erased += std::erase_if(_edges[ed.from],
             [ed](const Edge& edge) {
                 return edge.to == ed.to &&
-                    std::fabs(edge.distance - ed.distance) <
-                    std::numeric_limits<double>::epsilon();
+                    std::fabs(edge.distance - ed.distance) < std::numeric_limits<double>::epsilon();
             });
         if (cnt_erased) return true;
-        return false;
+        return false; 
     }
 
     bool has_edge(const V& from, const V& to) const {
         if (!_vertices.contains(from) || !_vertices.contains(to))
-            return false;
+            return false; 
         return std::any_of(_edges.at(from).begin(),
             _edges.at(from).end(),
             [to](const Edge& ed) {
@@ -119,7 +118,7 @@ public:
     }
 
     std::vector<Edge> edges(const V& vertex) const {
-        if (!has_vertex(vertex)) return {};
+        if (!has_vertex(vertex)) return {}; 
         return _edges.at(vertex);
     }
 
@@ -129,15 +128,15 @@ public:
 
     size_t degree(const V& v) const {
         if (!has_vertex(v)) return 0;
-        return _edges.at(v).size();
+        return _edges.at(v).size(); 
     }
-
 
     std::vector<Edge> shortest_path(const V& start, const V& end) const {
         if (!_vertices.contains(start) || !_vertices.contains(end)) throw std::invalid_argument("not found");
+
         std::unordered_map<V, D> distances;
         for (const auto& vert : _vertices) distances[vert] = std::numeric_limits<D>::infinity();
-        distances[start] = 0;
+        distances[start] = 0; 
 
         std::vector<Edge> path;
         std::priority_queue<std::pair<D, V>> priority_queue;
@@ -195,11 +194,11 @@ public:
 };
 template<typename V, typename D = double>
 std::pair<V, D> find_the_farthest_vertex(Graph<V, D> graph) {
-    std::vector<std::pair<V, D>> distances; 
+    std::vector<std::pair<V, D>> distances;
     std::vector<V> vertices = graph.vertices();
-    std::vector<typename Graph<V, D>::Edge> edges;
+    std::vector<typename Graph<V, D>::Edge> edges; 
     std::vector<typename Graph<V, D>::Edge> incoming_edges;
-    auto sum_dist = 0.0;ий
+    auto sum_dist = 0.0;
 
     for (auto& vert : vertices) {
         sum_dist = 0.0;
@@ -207,14 +206,15 @@ std::pair<V, D> find_the_farthest_vertex(Graph<V, D> graph) {
         incoming_edges.clear();
         edges = graph.edges(vert);
         incoming_edges = graph.get_incoming_edges(vert); 
-        edges.insert(edges.end(), incoming_edges.begin(), incoming_edges.end());
+        edges.insert(edges.end(), incoming_edges.begin(), incoming_edges.end()); 
         for (const auto& edge : edges) {
-            sum_dist += edge.distance;
+            sum_dist += edge.distance; 
         }
         distances.push_back({ vert, sum_dist / (static_cast<double>(graph.degree(vert) + incoming_edges.size())) });
     }
 
-    std::pair<V, D> farthest_vert = distances[0];
+    std::pair<V, D> farthest_vert = distances[0]; 
+
     for (const auto& vert : distances) {
         if (farthest_vert.second < vert.second) farthest_vert = vert;
     }
@@ -238,9 +238,12 @@ int main() {
     g.add_edge(8, 4, 2.0);
     g.add_edge(3, 8, 1.0);
 
+    g.get_incoming_edges(6);
+
     g.remove_vertex(7);
     g.remove_edge(8, 4);
     g.remove_edge({ 4,3,6 });
+
     g.walk(1, [](int vert) {std::cout << vert << " "; });
 
     auto path = g.shortest_path(1, 6);
@@ -255,3 +258,4 @@ int main() {
     std::cout << std::endl << "order of graph: " << g.order();
     return 0;
 }
+
